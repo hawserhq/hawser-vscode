@@ -1,0 +1,25 @@
+# Keeps the toolchain current without a flood of PRs: npm devDependencies are
+# grouped so one weekly PR bumps TypeScript/esbuild/vsce/types together, and
+# GitHub Actions get their own weekly check. The extension has no runtime
+# dependencies (single esbuild bundle), so every npm bump is build-time only.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      dev-dependencies:
+        dependency-type: development
+        update-types: [minor, patch]
+    labels: [dependencies]
+    commit-message:
+      prefix: deps
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    labels: [dependencies]
+    commit-message:
+      prefix: ci
