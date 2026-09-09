@@ -1,0 +1,79 @@
+{
+  "name": "hawser",
+  "displayName": "Hawser",
+  "description": "Docker Engine on Windows via WSL2 — see and control the Hawser engine from VS Code: idle/wake status, start/stop, doctor, and more.",
+  "version": "0.1.0",
+  "publisher": "zcsizmadia",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zcsizmadia/hawser-vscode"
+  },
+  "bugs": {
+    "url": "https://github.com/zcsizmadia/hawser-vscode/issues"
+  },
+  "homepage": "https://github.com/zcsizmadia/hawser",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "docker",
+    "wsl",
+    "wsl2",
+    "container",
+    "engine",
+    "hawser"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      { "command": "hawser.menu", "title": "Hawser: Engine Menu" },
+      { "command": "hawser.start", "title": "Hawser: Start Engine" },
+      { "command": "hawser.stop", "title": "Hawser: Stop Engine" },
+      { "command": "hawser.restart", "title": "Hawser: Restart Engine" },
+      { "command": "hawser.doctor", "title": "Hawser: Run Doctor" },
+      { "command": "hawser.refresh", "title": "Hawser: Refresh Status" }
+    ],
+    "configuration": {
+      "title": "Hawser",
+      "properties": {
+        "hawser.path": {
+          "type": "string",
+          "default": "",
+          "description": "Path to hawser.exe. Leave empty to resolve `hawser` on PATH."
+        },
+        "hawser.pollIntervalMs": {
+          "type": "number",
+          "default": 5000,
+          "minimum": 1000,
+          "description": "How often the status bar refreshes engine state, in milliseconds (only while a window is focused)."
+        },
+        "hawser.notifyTransitions": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show a notification when the engine idle-stops to free RAM or wakes back up."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "check": "tsc --noEmit",
+    "package": "vsce package --no-dependencies",
+    "vscode:prepublish": "npm run check && npm run build -- --production"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/vscode": "^1.90.0",
+    "@vscode/vsce": "^3.2.0",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.5.0"
+  }
+}
