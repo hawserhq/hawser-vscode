@@ -12,7 +12,10 @@
     "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    // Explicit, not implicit: TypeScript 7 no longer auto-includes every
+    // @types/* package, and "node" must stay on the extension host's Node major.
+    "types": ["node", "vscode"]
   },
   "include": ["src"]
 }

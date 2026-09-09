@@ -12,6 +12,16 @@ updates:
       dev-dependencies:
         dependency-type: development
         update-types: [minor, patch]
+    ignore:
+      # @types/node must match the VS Code extension host's Node major (20 for
+      # engines.vscode ^1.90); a newer major would type APIs that do not exist
+      # at runtime. Bump it deliberately when raising engines.vscode.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
+      # TypeScript majors change compiler behaviour (7.x dropped automatic
+      # @types inclusion); take them on purpose, not by bot.
+      - dependency-name: typescript
+        update-types: ["version-update:semver-major"]
     labels: [dependencies]
     commit-message:
       prefix: deps
