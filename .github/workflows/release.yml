@@ -1,0 +1,79 @@
+# Publish the extension on a v* tag (#4).
+#
+# Deliberately manual to trigger: a tag is the decision to release, and
+# nothing here runs on a push to main. The Marketplace and Open VSX are
+# permanent once published, so there is no undo to lean on.
+name: release
+
+on:
+  push:
+    tags: ['v*']
+  # So a failed publish can be retried without cutting a new tag.
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag to publish (e.g. v0.1.0)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    name: package and publish
+    runs-on: ubuntu-latest
+    # Job-level, not step-level: a step's `if` cannot see env defined in that
+    # same step, so the skip conditions below would never evaluate correctly.
+    env:
+      VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      OVSX_PAT: ${{ secrets.OVSX_PAT }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.tag || github.ref }}
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      # The same checks CI runs. A release is not the place to find out the
+      # typecheck was broken.
+      - run: npm run check
+      - run: npm run build -- --production
+
+      # The tag and the manifest must agree, or the Marketplace shows a
+      # version nobody can find in the repository.
+      - name: tag matches package.json version
+        run: |
+          set -euo pipefail
+          tag="${{ inputs.tag || github.ref_name }}"
+          manifest="v$(node -p "require('./package.json').version")"
+          if [ "$tag" != "$manifest" ]; then
+            echo "::error::tag $tag does not match package.json $manifest"
+            exit 1
+          fi
+          echo "$tag matches the manifest"
+
+      - name: package
+        run: npx @vscode/vsce package --no-dependencies -o hawser.vsix
+
+      # Attached first, so a failed Marketplace publish still leaves an
+      # installable artifact on the release rather than nothing.
+      - name: attach the vsix to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ inputs.tag || github.ref_name }}" hawser.vsix --clobber
+
+      # Both publishes are skipped when their secret is absent, so a fork — or
+      # this repository before the tokens are added — gets a packaged, attached
+      # vsix instead of a red run.
+      - name: publish to the VS Code Marketplace
+        if: env.VSCE_PAT != ''
+        run: npx @vscode/vsce publish --no-dependencies --packagePath hawser.vsix
+
+      - name: publish to Open VSX
+        if: env.OVSX_PAT != ''
+        run: npx ovsx publish hawser.vsix --pat "$OVSX_PAT"

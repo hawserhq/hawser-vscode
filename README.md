@@ -1,5 +1,13 @@
 # Hawser for VS Code
 
+[![CI](https://github.com/hawserhq/hawser-vscode/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/hawserhq/hawser-vscode/actions/workflows/ci.yml)
+[![License: Apache-2.0](https://img.shields.io/github/license/hawserhq/hawser-vscode?color=2F3B45)](LICENSE)
+
+<!-- Add on the first Marketplace publish; until then these render "not found":
+[![Marketplace](https://img.shields.io/visual-studio-marketplace/v/hawserhq.hawser?color=0a7d84&label=marketplace)](https://marketplace.visualstudio.com/items?itemName=hawserhq.hawser)
+[![Installs](https://img.shields.io/visual-studio-marketplace/i/hawserhq.hawser?color=0a7d84)](https://marketplace.visualstudio.com/items?itemName=hawserhq.hawser)
+-->
+
 See and control the [Hawser](https://github.com/hawserhq/hawser) engine — the
 upstream open source Docker Engine on Windows via WSL2 — from inside VS Code.
 
