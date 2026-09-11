@@ -1,20 +1,20 @@
 {
-  "name": "hawser",
-  "displayName": "Hawser",
-  "description": "Docker Engine on Windows via WSL2 — see and control the Hawser engine from VS Code: idle/wake status, start/stop, doctor, and more.",
+  "name": "skrog",
+  "displayName": "Skrog",
+  "description": "Docker Engine on Windows via WSL2 — see and control the Skrog engine from VS Code: idle/wake status, start/stop, doctor, and more.",
   "version": "0.1.0",
-  "publisher": "hawserhq",
+  "publisher": "wslkit",
   "license": "Apache-2.0",
   "icon": "icon.png",
   "galleryBanner": { "color": "#2F3B45", "theme": "dark" },
   "repository": {
     "type": "git",
-    "url": "https://github.com/hawserhq/hawser-vscode"
+    "url": "https://github.com/wslkit/skrog-vscode"
   },
   "bugs": {
-    "url": "https://github.com/hawserhq/hawser-vscode/issues"
+    "url": "https://github.com/wslkit/skrog-vscode/issues"
   },
-  "homepage": "https://github.com/hawserhq/hawser",
+  "homepage": "https://github.com/wslkit/skrog",
   "engines": {
     "vscode": "^1.90.0"
   },
@@ -27,7 +27,7 @@
     "wsl2",
     "container",
     "engine",
-    "hawser"
+    "skrog"
   ],
   "activationEvents": [
     "onStartupFinished"
@@ -35,28 +35,28 @@
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
-      { "command": "hawser.menu", "title": "Hawser: Engine Menu" },
-      { "command": "hawser.start", "title": "Hawser: Start Engine" },
-      { "command": "hawser.stop", "title": "Hawser: Stop Engine" },
-      { "command": "hawser.restart", "title": "Hawser: Restart Engine" },
-      { "command": "hawser.doctor", "title": "Hawser: Run Doctor" },
-      { "command": "hawser.refresh", "title": "Hawser: Refresh Status" }
+      { "command": "skrog.menu", "title": "Skrog: Engine Menu" },
+      { "command": "skrog.start", "title": "Skrog: Start Engine" },
+      { "command": "skrog.stop", "title": "Skrog: Stop Engine" },
+      { "command": "skrog.restart", "title": "Skrog: Restart Engine" },
+      { "command": "skrog.doctor", "title": "Skrog: Run Doctor" },
+      { "command": "skrog.refresh", "title": "Skrog: Refresh Status" }
     ],
     "configuration": {
-      "title": "Hawser",
+      "title": "Skrog",
       "properties": {
-        "hawser.path": {
+        "skrog.path": {
           "type": "string",
           "default": "",
-          "description": "Path to hawser.exe. Leave empty to resolve `hawser` on PATH."
+          "description": "Path to skrog.exe. Leave empty to resolve `skrog` on PATH."
         },
-        "hawser.pollIntervalMs": {
+        "skrog.pollIntervalMs": {
           "type": "number",
           "default": 5000,
           "minimum": 1000,
           "description": "How often the status bar refreshes engine state, in milliseconds (only while a window is focused)."
         },
-        "hawser.notifyTransitions": {
+        "skrog.notifyTransitions": {
           "type": "boolean",
           "default": true,
           "description": "Show a notification when the engine idle-stops to free RAM or wakes back up."

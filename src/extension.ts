@@ -1,31 +1,38 @@
 import * as vscode from 'vscode';
-import { Hawser, NotFoundError, type Status } from './hawser';
+import { Skrog, NotFoundError, type Status } from './skrog';
 import { StatusBar, type View } from './statusBar';
 
-/** Oldest hawser CLI this extension is tested against (its `--json` contract). */
-const MIN_HAWSER = '0.3.0';
+/**
+ * Oldest skrog CLI this extension is tested against (its `--json` contract).
+ *
+ * 0.4.0, not the 0.3.0 this read before the rename: releases through v0.3.1
+ * shipped `hawser.exe`, so no binary that answers to `skrog` can report a
+ * version below 0.4.0. Leaving it at 0.3.0 would have been a floor nothing can
+ * fall through -- a check that looks like one and is not.
+ */
+const MIN_SKROG = '0.4.0';
 
-let hawser: Hawser;
+let skrog: Skrog;
 let bar: StatusBar;
 let timer: NodeJS.Timeout | undefined;
 let last: Status | undefined;
-const out = vscode.window.createOutputChannel('Hawser');
+const out = vscode.window.createOutputChannel('Skrog');
 
 export async function activate(ctx: vscode.ExtensionContext): Promise<void> {
-  hawser = Hawser.fromSettings();
+  skrog = Skrog.fromSettings();
   bar = new StatusBar();
   ctx.subscriptions.push(bar, out);
 
   ctx.subscriptions.push(
-    vscode.commands.registerCommand('hawser.menu', menu),
-    vscode.commands.registerCommand('hawser.start', () => engineAction(['start'], 'Starting the engine…')),
-    vscode.commands.registerCommand('hawser.stop', () => engineAction(['stop'], 'Stopping the engine…')),
-    vscode.commands.registerCommand('hawser.restart', () => engineAction(['restart'], 'Restarting the engine…')),
-    vscode.commands.registerCommand('hawser.doctor', doctor),
-    vscode.commands.registerCommand('hawser.refresh', () => refresh()),
+    vscode.commands.registerCommand('skrog.menu', menu),
+    vscode.commands.registerCommand('skrog.start', () => engineAction(['start'], 'Starting the engine…')),
+    vscode.commands.registerCommand('skrog.stop', () => engineAction(['stop'], 'Stopping the engine…')),
+    vscode.commands.registerCommand('skrog.restart', () => engineAction(['restart'], 'Restarting the engine…')),
+    vscode.commands.registerCommand('skrog.doctor', doctor),
+    vscode.commands.registerCommand('skrog.refresh', () => refresh()),
     vscode.workspace.onDidChangeConfiguration((e) => {
-      if (e.affectsConfiguration('hawser')) {
-        hawser = Hawser.fromSettings();
+      if (e.affectsConfiguration('skrog')) {
+        skrog = Skrog.fromSettings();
         schedule();
         void refresh();
       }
@@ -47,7 +54,7 @@ export function deactivate(): void {
 }
 
 function pollInterval(): number {
-  return Math.max(1000, vscode.workspace.getConfiguration('hawser').get<number>('pollIntervalMs') ?? 5000);
+  return Math.max(1000, vscode.workspace.getConfiguration('skrog').get<number>('pollIntervalMs') ?? 5000);
 }
 
 function schedule(): void {
@@ -63,13 +70,13 @@ function schedule(): void {
 
 async function checkVersion(): Promise<void> {
   try {
-    const v = await hawser.version();
-    if (isRelease(v.app) && compare(v.app, MIN_HAWSER) < 0) {
+    const v = await skrog.version();
+    if (isRelease(v.app) && compare(v.app, MIN_SKROG) < 0) {
       void vscode.window.showWarningMessage(
-        `Hawser ${v.app} found; this extension expects ${MIN_HAWSER} or newer. Some features may not work.`,
+        `Skrog ${v.app} found; this extension expects ${MIN_SKROG} or newer. Some features may not work.`,
       );
     }
-    out.appendLine(`hawser ${v.app} at ${hawser.path}`);
+    out.appendLine(`skrog ${v.app} at ${skrog.path}`);
   } catch (e) {
     out.appendLine(`version check failed: ${String(e)}`);
   }
@@ -77,12 +84,12 @@ async function checkVersion(): Promise<void> {
 
 /**
  * Whether a reported version is a release at all, and so worth comparing
- * against MIN_HAWSER.
+ * against MIN_SKROG.
  *
- * Two builds are not: a source build reports `dev`, and hawser's release
+ * Two builds are not: a source build reports `dev`, and skrog's release
  * workflow stamps `0.0.0-ci` on pull-request builds and `0.0.0-dryrun` on a
  * dry run. Those parse as 0.0.0, which is below every minimum, so anyone
- * testing a CI artifact was told their hawser was too old when the version
+ * testing a CI artifact was told their skrog was too old when the version
  * only ever meant "not a release".
  */
 function isRelease(version: string): boolean {
@@ -106,7 +113,7 @@ function compare(a: string, b: string): number {
 async function refresh(): Promise<void> {
   let view: View;
   try {
-    const s = await hawser.status();
+    const s = await skrog.status();
     view = s.installed ? { kind: 'ok', status: s } : { kind: 'not-installed' };
     notifyTransition(last, s);
     last = s;
@@ -119,26 +126,26 @@ async function refresh(): Promise<void> {
 
 /** The idle-stop story made visible — the thing an always-on Docker Desktop cannot show. */
 function notifyTransition(prev: Status | undefined, cur: Status): void {
-  const enabled = vscode.workspace.getConfiguration('hawser').get<boolean>('notifyTransitions', true);
+  const enabled = vscode.workspace.getConfiguration('skrog').get<boolean>('notifyTransitions', true);
   if (!prev || !cur.installed || !enabled) {
     return;
   }
   if (prev.engine !== 'idle' && cur.engine === 'idle') {
     void vscode.window.showInformationMessage(
-      'Hawser: engine idle-stopped to free RAM. It wakes on your next docker command.',
+      'Skrog: engine idle-stopped to free RAM. It wakes on your next docker command.',
     );
   } else if (prev.engine === 'idle' && cur.engine === 'running') {
-    void vscode.window.showInformationMessage('Hawser: engine woke up.');
+    void vscode.window.showInformationMessage('Skrog: engine woke up.');
   }
 }
 
 async function engineAction(args: string[], title: string): Promise<void> {
   await vscode.window.withProgress({ location: vscode.ProgressLocation.Window, title }, async () => {
-    const r = await hawser.run(args, 180_000);
-    out.appendLine(`hawser ${args.join(' ')} → exit ${r.code}\n${r.stdout}${r.stderr}`);
+    const r = await skrog.run(args, 180_000);
+    out.appendLine(`skrog ${args.join(' ')} → exit ${r.code}\n${r.stdout}${r.stderr}`);
     if (r.code !== 0) {
       void vscode.window.showErrorMessage(
-        `hawser ${args.join(' ')} failed (exit ${r.code}). See the Hawser output channel.`,
+        `skrog ${args.join(' ')} failed (exit ${r.code}). See the Skrog output channel.`,
       );
     }
   });
@@ -147,10 +154,10 @@ async function engineAction(args: string[], title: string): Promise<void> {
 
 /** Doctor is a human-facing report; a terminal renders it as intended. */
 function doctor(): void {
-  const t = vscode.window.createTerminal({ name: 'Hawser doctor' });
+  const t = vscode.window.createTerminal({ name: 'Skrog doctor' });
   t.show();
-  // Quoted so a hawser.path with spaces works in PowerShell (the Windows default).
-  t.sendText(`& "${hawser.path}" doctor`);
+  // Quoted so a skrog.path with spaces works in PowerShell (the Windows default).
+  t.sendText(`& "${skrog.path}" doctor`);
 }
 
 async function menu(): Promise<void> {
@@ -160,38 +167,38 @@ async function menu(): Promise<void> {
 
   if (!s?.installed) {
     items.push({
-      label: '$(book) How to install Hawser',
-      run: () => vscode.env.openExternal(vscode.Uri.parse('https://github.com/hawserhq/hawser#install')),
+      label: '$(book) How to install Skrog',
+      run: () => vscode.env.openExternal(vscode.Uri.parse('https://github.com/wslkit/skrog#install')),
     });
   } else {
     if (s.engine !== 'running') {
       items.push({
         label: '$(play) Start / wake engine',
-        detail: 'hawser start',
+        detail: 'skrog start',
         run: () => engineAction(['start'], 'Starting the engine…'),
       });
     } else {
       items.push({
         label: '$(debug-stop) Stop engine',
-        detail: 'hawser stop — stays stopped until started',
+        detail: 'skrog stop — stays stopped until started',
         run: () => engineAction(['stop'], 'Stopping the engine…'),
       });
     }
     items.push({
       label: '$(debug-restart) Restart engine',
-      detail: 'hawser restart',
+      detail: 'skrog restart',
       run: () => engineAction(['restart'], 'Restarting the engine…'),
     });
   }
 
   items.push(
-    { label: '$(pulse) Run doctor', detail: 'hawser doctor', run: doctor },
+    { label: '$(pulse) Run doctor', detail: 'skrog doctor', run: doctor },
     { label: '$(refresh) Refresh status', run: () => refresh() },
-    { label: '$(output) Show Hawser output', run: () => out.show() },
+    { label: '$(output) Show Skrog output', run: () => out.show() },
   );
 
   const pick = await vscode.window.showQuickPick(items, {
-    placeHolder: s?.installed ? `Engine ${s.engine} · ${s.distro ?? ''}` : 'Hawser',
+    placeHolder: s?.installed ? `Engine ${s.engine} · ${s.distro ?? ''}` : 'Skrog',
   });
   await pick?.run();
 }

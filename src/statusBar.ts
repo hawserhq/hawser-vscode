@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
-import type { Status } from './hawser';
+import type { Status } from './skrog';
 
-/** What the status bar should show, derived from one `hawser status --json`. */
+/** What the status bar should show, derived from one `skrog status --json`. */
 export type View =
   | { kind: 'ok'; status: Status }
   | { kind: 'not-installed' }
@@ -10,17 +10,17 @@ export type View =
 
 /**
  * The engine's state, always in view. Docker Desktop has nothing to say here:
- * it is always-on. Hawser idle-stops to give RAM back and wakes on demand, and
+ * it is always-on. Skrog idle-stops to give RAM back and wakes on demand, and
  * this is where that becomes visible instead of a mystery.
  */
 export class StatusBar implements vscode.Disposable {
   private readonly item: vscode.StatusBarItem;
 
   constructor() {
-    this.item = vscode.window.createStatusBarItem('hawser.engine', vscode.StatusBarAlignment.Left, 50);
-    this.item.name = 'Hawser engine';
-    this.item.command = 'hawser.menu';
-    this.item.text = '$(sync~spin) Hawser';
+    this.item = vscode.window.createStatusBarItem('skrog.engine', vscode.StatusBarAlignment.Left, 50);
+    this.item.name = 'Skrog engine';
+    this.item.command = 'skrog.menu';
+    this.item.text = '$(sync~spin) Skrog';
     this.item.show();
   }
 
@@ -33,27 +33,27 @@ export class StatusBar implements vscode.Disposable {
         const profile = s.profile ? ` · ${s.profile}` : '';
         switch (s.engine) {
           case 'running':
-            this.set(`$(vm-running) Hawser${profile}`, tip(s, 'Engine running'));
+            this.set(`$(vm-running) Skrog${profile}`, tip(s, 'Engine running'));
             break;
           case 'idle':
             this.set(
-              `$(vm-outline) Hawser idle${profile}`,
+              `$(vm-outline) Skrog idle${profile}`,
               tip(s, 'Engine idle-stopped to free RAM — wakes on your next docker command'),
             );
             break;
           default:
-            this.set(`$(debug-stop) Hawser stopped${profile}`, tip(s, 'Engine stopped (stays stopped until started)'), warn);
+            this.set(`$(debug-stop) Skrog stopped${profile}`, tip(s, 'Engine stopped (stays stopped until started)'), warn);
         }
         break;
       }
       case 'not-installed':
-        this.set('$(warning) Hawser: not installed', 'No Hawser engine on this machine. Run `hawser install`.', warn);
+        this.set('$(warning) Skrog: not installed', 'No Skrog engine on this machine. Run `skrog install`.', warn);
         break;
       case 'not-found':
-        this.set('$(error) Hawser: not found', `Could not run "${v.path}". Install Hawser or set hawser.path.`, error);
+        this.set('$(error) Skrog: not found', `Could not run "${v.path}". Install Skrog or set skrog.path.`, error);
         break;
       case 'error':
-        this.set('$(error) Hawser', v.message, error);
+        this.set('$(error) Skrog', v.message, error);
         break;
     }
   }

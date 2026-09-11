@@ -23,9 +23,9 @@ jobs:
       - run: npm run build -- --production
       # Packaging in CI catches manifest mistakes (missing publisher, bad
       # activation events) before a release does.
-      - run: npx @vscode/vsce package --no-dependencies -o hawser.vsix
+      - run: npx @vscode/vsce package --no-dependencies -o skrog.vsix
       - uses: actions/upload-artifact@v7
         with:
-          name: hawser-vsix
-          path: hawser.vsix
+          name: skrog-vsix
+          path: skrog.vsix
           retention-days: 14

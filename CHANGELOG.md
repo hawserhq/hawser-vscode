@@ -20,9 +20,9 @@ Initial extension.
   for start, stop, restart, doctor, and refresh.
 - Notifications when the engine idle-stops to free RAM or wakes back up — the
   state an always-on Docker Desktop has no way to show.
-- `Hawser: Run Doctor` opens `hawser doctor` in a terminal.
-- Talks to `hawser.exe` only through its `--json` CLI contract (Hawser ≥ 0.3.0),
+- `Skrog: Run Doctor` opens `skrog doctor` in a terminal.
+- Talks to `skrog.exe` only through its `--json` CLI contract (Skrog ≥ 0.4.0),
   so the extension holds no engine logic of its own.
 
-[Unreleased]: https://github.com/hawserhq/hawser-vscode/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/hawserhq/hawser-vscode/releases/tag/v0.1.0
+[Unreleased]: https://github.com/wslkit/skrog-vscode/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/wslkit/skrog-vscode/releases/tag/v0.1.0

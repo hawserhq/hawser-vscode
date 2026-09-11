@@ -58,22 +58,22 @@ jobs:
           echo "$tag matches the manifest"
 
       - name: package
-        run: npx @vscode/vsce package --no-dependencies -o hawser.vsix
+        run: npx @vscode/vsce package --no-dependencies -o skrog.vsix
 
       # Attached first, so a failed Marketplace publish still leaves an
       # installable artifact on the release rather than nothing.
       - name: attach the vsix to the release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload "${{ inputs.tag || github.ref_name }}" hawser.vsix --clobber
+        run: gh release upload "${{ inputs.tag || github.ref_name }}" skrog.vsix --clobber
 
       # Both publishes are skipped when their secret is absent, so a fork — or
       # this repository before the tokens are added — gets a packaged, attached
       # vsix instead of a red run.
       - name: publish to the VS Code Marketplace
         if: env.VSCE_PAT != ''
-        run: npx @vscode/vsce publish --no-dependencies --packagePath hawser.vsix
+        run: npx @vscode/vsce publish --no-dependencies --packagePath skrog.vsix
 
       - name: publish to Open VSX
         if: env.OVSX_PAT != ''
-        run: npx ovsx publish hawser.vsix --pat "$OVSX_PAT"
+        run: npx ovsx publish skrog.vsix --pat "$OVSX_PAT"
