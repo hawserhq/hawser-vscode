@@ -5,6 +5,8 @@
   "version": "0.1.0",
   "publisher": "hawserhq",
   "license": "Apache-2.0",
+  "icon": "icon.png",
+  "galleryBanner": { "color": "#2F3B45", "theme": "dark" },
   "repository": {
     "type": "git",
     "url": "https://github.com/hawserhq/hawser-vscode"
