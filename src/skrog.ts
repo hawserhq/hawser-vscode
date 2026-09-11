@@ -1,7 +1,7 @@
 import * as cp from 'node:child_process';
 import * as vscode from 'vscode';
 
-/** Shape of `hawser status --json`. */
+/** Shape of `skrog status --json`. */
 export interface Status {
   installed: boolean;
   distro?: string;
@@ -12,7 +12,7 @@ export interface Status {
   profile?: string;
 }
 
-/** Shape of `hawser version --json` (only the field the extension needs). */
+/** Shape of `skrog version --json` (only the field the extension needs). */
 export interface Version {
   app: string;
 }
@@ -23,27 +23,27 @@ export interface RunResult {
   stderr: string;
 }
 
-/** The hawser binary could not be executed at all: not on PATH, or a bad `hawser.path`. */
+/** The skrog binary could not be executed at all: not on PATH, or a bad `skrog.path`. */
 export class NotFoundError extends Error {
   constructor(public readonly path: string) {
-    super(`hawser not found at "${path}"`);
+    super(`skrog not found at "${path}"`);
     this.name = 'NotFoundError';
   }
 }
 
 /**
- * The extension's only coupling to Hawser: the CLI contract — `--json` output
+ * The extension's only coupling to Skrog: the CLI contract — `--json` output
  * and exit codes (0 ok, 1 error, 2 usage, 3 not installed). Nothing here
  * scrapes human-readable text; that contract is what lets this extension live
- * in its own repo and pin a minimum hawser version.
+ * in its own repo and pin a minimum skrog version.
  */
-export class Hawser {
+export class Skrog {
   constructor(public readonly path: string) {}
 
-  /** Resolves the binary from the `hawser.path` setting, else `hawser` on PATH. */
-  static fromSettings(): Hawser {
-    const p = vscode.workspace.getConfiguration('hawser').get<string>('path')?.trim();
-    return new Hawser(p && p.length > 0 ? p : 'hawser');
+  /** Resolves the binary from the `skrog.path` setting, else `skrog` on PATH. */
+  static fromSettings(): Skrog {
+    const p = vscode.workspace.getConfiguration('skrog').get<string>('path')?.trim();
+    return new Skrog(p && p.length > 0 ? p : 'skrog');
   }
 
   run(args: string[], timeoutMs = 30_000): Promise<RunResult> {
@@ -53,7 +53,7 @@ export class Hawser {
         args,
         { timeout: timeoutMs, windowsHide: true, maxBuffer: 8 * 1024 * 1024 },
         (err, stdout, stderr) => {
-          // execFile reports every non-zero exit as an error. Hawser's non-zero
+          // execFile reports every non-zero exit as an error. Skrog's non-zero
           // codes are meaningful (3 = not installed still emits JSON), so only
           // "could not run it" and "timed out" are failures here.
           const e = err as (Error & { code?: number | string; killed?: boolean }) | null;
@@ -62,7 +62,7 @@ export class Hawser {
             return;
           }
           if (e?.killed) {
-            reject(new Error(`hawser ${args.join(' ')} timed out after ${timeoutMs}ms`));
+            reject(new Error(`skrog ${args.join(' ')} timed out after ${timeoutMs}ms`));
             return;
           }
           const code = e && typeof e.code === 'number' ? e.code : 0;
@@ -78,12 +78,12 @@ export class Hawser {
     const text = r.stdout.trim();
     if (!text) {
       const why = r.stderr.trim() ? `: ${r.stderr.trim()}` : '';
-      throw new Error(`hawser ${args.join(' ')} exited ${r.code} with no output${why}`);
+      throw new Error(`skrog ${args.join(' ')} exited ${r.code} with no output${why}`);
     }
     try {
       return JSON.parse(text) as T;
     } catch {
-      throw new Error(`hawser ${args.join(' ')} returned non-JSON (exit ${r.code}): ${text.slice(0, 200)}`);
+      throw new Error(`skrog ${args.join(' ')} returned non-JSON (exit ${r.code}): ${text.slice(0, 200)}`);
     }
   }
 

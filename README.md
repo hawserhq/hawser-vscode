@@ -1,47 +1,47 @@
-# Hawser for VS Code
+# Skrog for VS Code
 
-[![CI](https://github.com/hawserhq/hawser-vscode/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/hawserhq/hawser-vscode/actions/workflows/ci.yml)
-[![License: Apache-2.0](https://img.shields.io/github/license/hawserhq/hawser-vscode?color=2F3B45)](LICENSE)
+[![CI](https://github.com/wslkit/skrog-vscode/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/wslkit/skrog-vscode/actions/workflows/ci.yml)
+[![License: Apache-2.0](https://img.shields.io/github/license/wslkit/skrog-vscode?color=2F3B45)](LICENSE)
 
 <!-- Add on the first Marketplace publish; until then these render "not found":
-[![Marketplace](https://img.shields.io/visual-studio-marketplace/v/hawserhq.hawser?color=0a7d84&label=marketplace)](https://marketplace.visualstudio.com/items?itemName=hawserhq.hawser)
-[![Installs](https://img.shields.io/visual-studio-marketplace/i/hawserhq.hawser?color=0a7d84)](https://marketplace.visualstudio.com/items?itemName=hawserhq.hawser)
+[![Marketplace](https://img.shields.io/visual-studio-marketplace/v/wslkit.skrog?color=0a7d84&label=marketplace)](https://marketplace.visualstudio.com/items?itemName=wslkit.skrog)
+[![Installs](https://img.shields.io/visual-studio-marketplace/i/wslkit.skrog?color=0a7d84)](https://marketplace.visualstudio.com/items?itemName=wslkit.skrog)
 -->
 
-See and control the [Hawser](https://github.com/hawserhq/hawser) engine — the
+See and control the [Skrog](https://github.com/wslkit/skrog) engine — the
 upstream open source Docker Engine on Windows via WSL2 — from inside VS Code.
 
-Hawser does things Docker Desktop's architecture cannot, and this extension is
+Skrog does things Docker Desktop's architecture cannot, and this extension is
 where they become visible and one click away:
 
-- **Engine state in the status bar** — running, *idle*, or stopped. Hawser
+- **Engine state in the status bar** — running, *idle*, or stopped. Skrog
   idle-stops a quiet engine to give its RAM back and wakes it on your next
   `docker` command; Docker Desktop is always-on and has no such state to show.
   Click for start / stop / restart / doctor.
-- **Doctor** — run `hawser doctor` in a terminal from the command palette.
-- Coming next, tracked in the [issues](https://github.com/hawserhq/hawser-vscode/issues):
+- **Doctor** — run `skrog doctor` in a terminal from the command palette.
+- Coming next, tracked in the [issues](https://github.com/wslkit/skrog-vscode/issues):
   **engine snapshots as checkpoints**, **doctor in the Problems panel with fix
   actions**, **a remote GPU engine as your Dev Container host over mutual TLS**,
   **GPU dev containers**, an **audit panel**, and per-workspace profiles.
 
 ## Requirements
 
-- Windows 11 with WSL2 and **Hawser installed** (`hawser install`). The
-  extension talks to `hawser.exe` only through its `--json` CLI contract; it needs
-  Hawser 0.3.0 or newer.
-- `hawser` on PATH, or set `hawser.path`.
+- Windows 11 with WSL2 and **Skrog installed** (`skrog install`). The
+  extension talks to `skrog.exe` only through its `--json` CLI contract; it needs
+  Skrog 0.3.0 or newer.
+- `skrog` on PATH, or set `skrog.path`.
 
 ## Settings
 
 | Setting | Default | What it does |
 | --- | --- | --- |
-| `hawser.path` | `""` | Path to `hawser.exe`; empty resolves `hawser` on PATH |
-| `hawser.pollIntervalMs` | `5000` | Status refresh interval (only while a window is focused) |
-| `hawser.notifyTransitions` | `true` | Toast when the engine idle-stops or wakes |
+| `skrog.path` | `""` | Path to `skrog.exe`; empty resolves `skrog` on PATH |
+| `skrog.pollIntervalMs` | `5000` | Status refresh interval (only while a window is focused) |
+| `skrog.notifyTransitions` | `true` | Toast when the engine idle-stops or wakes |
 
 ## Commands
 
-`Hawser: Engine Menu` · `Start Engine` · `Stop Engine` · `Restart Engine` ·
+`Skrog: Engine Menu` · `Start Engine` · `Stop Engine` · `Restart Engine` ·
 `Run Doctor` · `Refresh Status`
 
 ## Development
@@ -60,10 +60,10 @@ npm run package      # build the .vsix
 ```
 
 The extension is a single esbuild bundle with no runtime dependencies. It never
-scrapes human-readable `hawser` output — only `--json` and exit codes — which is
+scrapes human-readable `skrog` output — only `--json` and exit codes — which is
 the contract that lets it live in its own repo.
 
 ## License
 
-[Apache-2.0](LICENSE). Hawser is not affiliated with or endorsed by Docker, Inc.;
+[Apache-2.0](LICENSE). Skrog is not affiliated with or endorsed by Docker, Inc.;
 Docker is a trademark of Docker, Inc.
