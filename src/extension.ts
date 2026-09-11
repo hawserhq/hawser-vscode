@@ -64,8 +64,7 @@ function schedule(): void {
 async function checkVersion(): Promise<void> {
   try {
     const v = await hawser.version();
-    // A source build reports "dev"; that is never too old.
-    if (v.app !== 'dev' && compare(v.app, MIN_HAWSER) < 0) {
+    if (isRelease(v.app) && compare(v.app, MIN_HAWSER) < 0) {
       void vscode.window.showWarningMessage(
         `Hawser ${v.app} found; this extension expects ${MIN_HAWSER} or newer. Some features may not work.`,
       );
@@ -74,6 +73,20 @@ async function checkVersion(): Promise<void> {
   } catch (e) {
     out.appendLine(`version check failed: ${String(e)}`);
   }
+}
+
+/**
+ * Whether a reported version is a release at all, and so worth comparing
+ * against MIN_HAWSER.
+ *
+ * Two builds are not: a source build reports `dev`, and hawser's release
+ * workflow stamps `0.0.0-ci` on pull-request builds and `0.0.0-dryrun` on a
+ * dry run. Those parse as 0.0.0, which is below every minimum, so anyone
+ * testing a CI artifact was told their hawser was too old when the version
+ * only ever meant "not a release".
+ */
+function isRelease(version: string): boolean {
+  return version !== 'dev' && !version.startsWith('0.0.0');
 }
 
 /** Compares dotted versions; non-numeric segments compare as 0. */
