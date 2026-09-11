@@ -3,16 +3,16 @@
   "displayName": "Hawser",
   "description": "Docker Engine on Windows via WSL2 — see and control the Hawser engine from VS Code: idle/wake status, start/stop, doctor, and more.",
   "version": "0.1.0",
-  "publisher": "zcsizmadia",
+  "publisher": "hawserhq",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/zcsizmadia/hawser-vscode"
+    "url": "https://github.com/hawserhq/hawser-vscode"
   },
   "bugs": {
-    "url": "https://github.com/zcsizmadia/hawser-vscode/issues"
+    "url": "https://github.com/hawserhq/hawser-vscode/issues"
   },
-  "homepage": "https://github.com/zcsizmadia/hawser",
+  "homepage": "https://github.com/hawserhq/hawser",
   "engines": {
     "vscode": "^1.90.0"
   },

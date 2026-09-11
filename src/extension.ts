@@ -161,7 +161,7 @@ async function menu(): Promise<void> {
   if (!s?.installed) {
     items.push({
       label: '$(book) How to install Hawser',
-      run: () => vscode.env.openExternal(vscode.Uri.parse('https://github.com/zcsizmadia/hawser#install')),
+      run: () => vscode.env.openExternal(vscode.Uri.parse('https://github.com/hawserhq/hawser#install')),
     });
   } else {
     if (s.engine !== 'running') {
