@@ -10,7 +10,7 @@ whose version names no tag in the repository cannot be traced back to source.
 
 ## [Unreleased]
 
-## [0.1.0] — unreleased
+## [0.1.0] — 2026-09-12
 
 Initial extension.
 
